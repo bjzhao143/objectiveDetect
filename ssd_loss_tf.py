@@ -9,11 +9,15 @@ class SSDLoss:
                  neg_pos_ratio=3,
                  n_neg_min=0,
                  alpha=1.0):
-        def smooth_L1_loss(self, y_true, y_pred):
-            absolute_loss = tf.abs(y_true - y_pred)
-            square_loss = 0.5 * (y_true - y_pred) ** 2
-            l1_loss = tf.where(tf.less(absolute_loss, 1.0), square_loss, absolute_loss - 0.5)
-            return tf.reduce_sum(l1_loss, axis=-1)
+        self.neg_pos_ratio = neg_pos_ratio
+        self.n_neg_min = n_neg_min
+        self.alpha = alpha
+
+    def smooth_L1_loss(self, y_true, y_pred):
+        absolute_loss = tf.abs(y_true - y_pred)
+        square_loss = 0.5 * (y_true - y_pred) ** 2
+        l1_loss = tf.where(tf.less(absolute_loss, 1.0), square_loss, absolute_loss - 0.5)
+        return tf.reduce_sum(l1_loss, axis=-1)
 
     def log_loss(self, y_true, y_pred):
         # 确保y_pred中不含0，否则会使log函数崩溃的
